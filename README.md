@@ -4,12 +4,13 @@ venv creation
 python -m venv ./venv
 
 virtual env activation  
-(linux) source venv/bin/activate
-(windows) venv\Scripts\activate.bat
+(linux) source venv/bin/activate  
+(windows) venv\Scripts\activate.bat  
+
 run jupyterlab  
 jupyter lab
 
 dependencies  
-(install) pip install -r requirements.txt
+(install) pip install -r requirements.txt  
 (save) pip freeze > requirements.txt  
 (win pandas-profiling version err) pip install pandas-profiling
