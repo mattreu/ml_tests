@@ -1,11 +1,15 @@
 # ml_tests
 
-virtual env activation  
-source venv/bin/activate
+venv creation
+python -m venv ./venv
 
+virtual env activation  
+(linux) source venv/bin/activate
+(windows) venv\Scripts\activate.bat
 run jupyterlab  
 jupyter lab
 
 dependencies  
-pip freeze > requirements.txt  
-pip install -r requirements.txt
+(install) pip install -r requirements.txt
+(save) pip freeze > requirements.txt  
+(win pandas-profiling version err) pip install pandas-profiling
