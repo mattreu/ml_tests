@@ -2,7 +2,7 @@ import numpy as np
 
 class Matrix_Factorization():
     
-    def __init__(self, ratings, latent_factors, learning_rate, regularization, iterations) -> None:
+    def __init__(self, ratings: np.ndarray, latent_factors: int, learning_rate: float = 0.1, regularization: float = 0.01, iterations: int = 100, momentum:float = 0.9) -> None:
         """
         Perform matrix factorization to predict empty
         entries in a matrix.
@@ -18,6 +18,8 @@ class Matrix_Factorization():
             regularization parameter to avoid overfitting
         iterations: int
             number of model training iterations
+        momentum: float
+            (optimization) momentum value adds portion of previous movement to current movement so learning is faster
         """
         
         self.rating_matrix = ratings
@@ -26,8 +28,9 @@ class Matrix_Factorization():
         self.learning_rate = learning_rate
         self.regularization = regularization
         self.train_iterations = iterations
+        self.momentum = momentum
 
-    def get_rating(self, user_index, item_index):
+    def get_rating(self, user_index: int, item_index: int):
         """
         Returns predicted rating of item by user
         """
@@ -45,21 +48,31 @@ class Matrix_Factorization():
         """
         Execute stochastic gradient descent algorithm to minimize prediction error
         """
+        # Initialize momentum for biases and latent factors
+        user_bias_momentum = np.zeros_like(self.user_bias)
+        item_bias_momentum = np.zeros_like(self.item_bias)
+        user_latent_factors_momentum = np.zeros_like(self.user_latent_factors)
+        item_latent_factors_momentum = np.zeros_like(self.item_latent_factors)
+    
         for user_index, item_index, rating in self.training_samples:
             # Predict rating then difference between it and actual rating
             prediction = self.get_rating(user_index, item_index)
             error = (rating - prediction)
-            
-            # Update biases
-            self.user_bias[user_index] += self.learning_rate * (error - self.regularization * self.user_bias[user_index])
-            self.item_bias[item_index] += self.learning_rate * (error - self.regularization * self.item_bias[item_index])
-            
+    
+            # Update biases with momentum
+            user_bias_momentum[user_index] = self.momentum * user_bias_momentum[user_index] + self.learning_rate * (error - self.regularization * self.user_bias[user_index])
+            self.user_bias[user_index] += user_bias_momentum[user_index]
+            item_bias_momentum[item_index] = self.momentum * item_bias_momentum[item_index] + self.learning_rate * (error - self.regularization * self.item_bias[item_index])
+            self.item_bias[item_index] += item_bias_momentum[item_index]
+    
             # Backup of user latent factors for it needs update but these values also update item latent factors
             user_latent_factors_backup = self.user_latent_factors[user_index, :][:]
-            
-            # Update user and item latent factors matrices
-            self.user_latent_factors[user_index, :] += self.learning_rate * (error * self.item_latent_factors[item_index, :] - self.regularization * self.user_latent_factors[user_index,:])
-            self.item_latent_factors[item_index, :] += self.learning_rate * (error * user_latent_factors_backup - self.regularization * self.item_latent_factors[item_index,:])
+    
+            # Update user and item latent factors matrices with momentum
+            user_latent_factors_momentum[user_index, :] = self.momentum * user_latent_factors_momentum[user_index, :] + self.learning_rate * (error * self.item_latent_factors[item_index, :] - self.regularization * self.user_latent_factors[user_index,:])
+            self.user_latent_factors[user_index, :] += user_latent_factors_momentum[user_index, :]
+            item_latent_factors_momentum[item_index, :] = self.momentum * item_latent_factors_momentum[item_index, :] + self.learning_rate * (error * user_latent_factors_backup - self.regularization * self.item_latent_factors[item_index,:])
+            self.item_latent_factors[item_index, :] += item_latent_factors_momentum[item_index, :]
 
     def get_mean_squared_error(self):
         """
