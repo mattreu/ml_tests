@@ -4,7 +4,7 @@ class RBM:
   
   def __init__(self, ratings: np.ndarray, hidden_nodes_num: int, learning_rate: float = 0.1, iterations: int = 1000):
     """
-    Restricted Boltzmann Machine class used for recommendations generation.
+    Restricted Boltzmann Machine class used for recommendations generation
 
     Parameters
     ----------
@@ -24,24 +24,22 @@ class RBM:
     self.learning_rate = learning_rate
     self.iterations = iterations
 
-    random_generator = np.random.RandomState(1234)
-
     # Create weight matrix (visible_nodes_num x hidden_nodes_num)
-    # Uniform distribution where all states are equally likely to appear
-    self.weights = np.asarray(random_generator.uniform(
+    # Uniform dist -> all states are equally likely to appear
+    self.weights = np.random.uniform(
 			low=-0.1 * np.sqrt(6. / (hidden_nodes_num + self.visible_nodes_num)),
       high=0.1 * np.sqrt(6. / (hidden_nodes_num + self.visible_nodes_num)),
-      size=(self.visible_nodes_num, self.hidden_nodes_num)))
+      size=(self.visible_nodes_num, self.hidden_nodes_num))
 
-    # Add bias into the first row and first column
+    # Add bias into first row and first column
     self.weights = np.insert(self.weights, 0, 0, axis = 0)
     self.weights = np.insert(self.weights, 0, 0, axis = 1)
 
   def train(self):
     """
-    Restricted Boltzmann Machine class used for recommendations generation.
+    Run model training
     """
-    # Insert bias 1 into the first column of training data
+    # Insert bias 1 into first column of training data
     data = np.insert(self.ratings, 0, 1, axis = 1)
 
     for iteration in range(self.iterations):
@@ -54,7 +52,7 @@ class RBM:
       # Measure whether both nodes are active (a measure of how much the input and hidden layer agree)
       pos_associations = np.dot(data.T, pos_hidden_probs)
 
-      # Reconstruct visible nodes and sample again from the hidden nodes
+      # Reconstruct visible nodes and sample again from hidden nodes
       neg_visible_activations = np.dot(pos_hidden_states, self.weights.T)
       neg_visible_probs = self._logistic(neg_visible_activations)
       neg_visible_probs[:,0] = 1
@@ -71,7 +69,7 @@ class RBM:
 
   def run_visible(self, data):
     """
-    After RBM has been trained use a set of visible nodes, to generate a sample of hidden nodes.
+    After RBM has been trained use a set of visible nodes, to generate a sample of hidden nodes
     
     Parameters
     ----------
@@ -104,7 +102,7 @@ class RBM:
     
   def run_hidden(self, data):
     """
-    After RBM has been trained use a set of hidden nodes, to generate a sample of visible nodes.
+    After RBM has been trained use a set of hidden nodes, to generate a sample of visible nodes
 
     Parameters
     ----------
@@ -136,6 +134,19 @@ class RBM:
     return visible_states
   
   def get_recommendations(self, data):
+    """
+    Run visible and hidden nodes to generate recommendations
+
+    Parameters
+    ----------
+    data: ndarray
+      User's current watched/liked movies (visible states matrix)
+
+    Returns
+    -------
+    recommendations: ndarray
+      Recommendations matrix
+    """
     recommendations = self.run_hidden(self.run_visible(data))
     return recommendations
 
