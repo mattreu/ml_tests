@@ -162,3 +162,5 @@ cython_debug/
 pyvenv.cfg
 ml-100k
 .virtual_documents/data_analytics.ipynb
+
+scikit/datasets
