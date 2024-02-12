@@ -2,7 +2,7 @@ import numpy as np
 
 class RBM:
   
-  def __init__(self, ratings: np.ndarray, hidden_nodes_num: int, learning_rate: float = 0.1, iterations: int = 1000):
+  def __init__(self, ratings: np.ndarray, hidden_nodes_num: int, learning_rate: float = 0.1, iterations: int = 1000, random_seed: int = None):
     """
     Restricted Boltzmann Machine class used for recommendations generation
 
@@ -15,18 +15,21 @@ class RBM:
     learning_rate: float
     iterations: int
         number of model training iterations
+    random_seed: int
+        seed for random numbers generation used for testing purposes
     """
 
     self.hidden_nodes_num = hidden_nodes_num
     self.training_samples, self.visible_nodes_num = ratings.shape
-    self.debug_print = True
+    self.debug_print = False
     self.ratings = ratings
     self.learning_rate = learning_rate
     self.iterations = iterations
+    self.generator = np.random.default_rng(random_seed)
 
     # Create weight matrix (visible_nodes_num x hidden_nodes_num)
     # Uniform dist -> all states are equally likely to appear
-    self.weights = np.random.uniform(
+    self.weights = self.generator.uniform(
 			low=-0.1 * np.sqrt(6. / (hidden_nodes_num + self.visible_nodes_num)),
       high=0.1 * np.sqrt(6. / (hidden_nodes_num + self.visible_nodes_num)),
       size=(self.visible_nodes_num, self.hidden_nodes_num))
@@ -35,12 +38,37 @@ class RBM:
     self.weights = np.insert(self.weights, 0, 0, axis = 0)
     self.weights = np.insert(self.weights, 0, 0, axis = 1)
 
-  def train(self):
+  def set_debug(self, debug_print):
+    """
+    Set outputting debug messages about model's work
+
+    Parameters
+    ----------
+    debug_print : bool
+      If True model will output additional info when working
+    """
+    self.debug_print = debug_print
+
+  def get_learning_rate(self):
+    return self.learning_rate
+
+  def train(self, return_error: bool = False):
     """
     Run model training
+
+    Parameters
+    ----------
+    return_error : bool
+      If True function will return list with rmse value for each iteration
+
+    Returns
+    -------
+    iter_error: list
+      Error value for each iteration list
     """
     # Insert bias 1 into first column of training data
     data = np.insert(self.ratings, 0, 1, axis = 1)
+    iter_error = []
 
     for iteration in range(self.iterations):
       # Activate hidden nodes then clamp probabilities using logistic function
@@ -48,7 +76,7 @@ class RBM:
       pos_hidden_probs = self._logistic(pos_hidden_activations)
       pos_hidden_probs[:,0] = 1 # Fix bias
       # Activated hidden nodes
-      pos_hidden_states = pos_hidden_probs > np.random.rand(self.training_samples, self.hidden_nodes_num + 1)
+      pos_hidden_states = pos_hidden_probs > self.generator.random(size=(self.training_samples, self.hidden_nodes_num + 1))
       # Measure whether both nodes are active (a measure of how much the input and hidden layer agree)
       pos_associations = np.dot(data.T, pos_hidden_probs)
 
@@ -64,8 +92,12 @@ class RBM:
       self.weights += self.learning_rate * ((pos_associations - neg_associations) / self.training_samples)
 
       error = np.sum((data - neg_visible_probs) ** 2)
+      if return_error:
+        iter_error.append(error)
       if self.debug_print:
         print("Iteration %s: error is %s" % (iteration, error))
+    if return_error:
+      return iter_error
 
   def run_visible(self, data):
     """
@@ -94,7 +126,7 @@ class RBM:
     hidden_activations = np.dot(data, self.weights)
     hidden_probs = self._logistic(hidden_activations)
     # Activate hidden nodes
-    hidden_states[:,:] = hidden_probs > np.random.rand(num_examples, self.hidden_nodes_num + 1)
+    hidden_states[:,:] = hidden_probs > self.generator.random(size=(num_examples, self.hidden_nodes_num + 1))
   
     # Take states without bias
     hidden_states = hidden_states[:,1:]
@@ -127,7 +159,7 @@ class RBM:
     visible_activations = np.dot(data, self.weights.T)
     visible_probs = self._logistic(visible_activations)
     # Activate hidden nodes
-    visible_states[:,:] = visible_probs > np.random.rand(num_examples, self.visible_nodes_num + 1)
+    visible_states[:,:] = visible_probs > self.generator.random(size=(num_examples, self.visible_nodes_num + 1))
 
     # Take states without bias
     visible_states = visible_states[:,1:]
@@ -153,10 +185,11 @@ class RBM:
   def _logistic(self, x):
     return 1.0 / (1 + np.exp(-x))
 
-if __name__ == '__main__':
-  training_data = np.array([[1,1,1,0,0,0],[1,0,1,0,0,0],[1,1,1,0,0,0],[0,0,1,1,1,0], [0,0,1,1,0,0],[0,0,1,1,1,0]]) #todo load data from file
-  model = RBM(training_data, 5)
-  model.train()
-  print(model.weights)
-  user = np.array([[0,0,0,1,1,0]])
-  print(model.get_recommendations(user))
+# sample usage
+# if __name__ == '__main__':
+#   training_data = np.array([[1,1,1,0,0,0],[1,0,1,0,0,0],[1,1,1,0,0,0],[0,0,1,1,1,0], [0,0,1,1,0,0],[0,0,1,1,1,0]])
+#   model = RBM(training_data, 5)
+#   model.train()
+#   print(model.weights)
+#   user = np.array([[0,0,0,1,1,0]])
+#   print(model.get_recommendations(user))
