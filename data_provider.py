@@ -8,7 +8,7 @@ class data_provider:
         print(zip_ref.read('ml-100k/u.info'))
 
     # Utility to split the data into training and test sets.
-    def split_dataframe(self, df: pd.DataFrame, holdout_fraction=0.1):
+    def split_dataframe(self, df: pd.DataFrame, holdout_fraction:float=0.1, random_seed:int=None):
         """
         Splits a DataFrame into training and test sets.
 
@@ -26,7 +26,7 @@ class data_provider:
         test: DataFrame
             Testing data
         """
-        test = df.sample(frac=holdout_fraction, replace=False)
+        test = df.sample(frac=holdout_fraction, replace=False, random_state=random_seed)
         train = df[~df.index.isin(test.index)]
         return train, test
 
