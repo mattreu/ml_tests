@@ -2,7 +2,7 @@ import numpy as np
 
 class Matrix_Factorization():
     
-    def __init__(self, ratings: np.ndarray, latent_factors: int, learning_rate: float = 0.1, regularization: float = 0.01, iterations: int = 100, momentum:float = 0.9) -> None:
+    def __init__(self, ratings: np.ndarray, latent_factors: int, learning_rate: float = 0.1, regularization: float = 0.01, iterations: int = 100, random_seed:int = None, momentum:float = 0.2) -> None:
         """
         Perform matrix factorization to predict empty
         entries in a matrix.
@@ -28,6 +28,7 @@ class Matrix_Factorization():
         self.learning_rate = learning_rate
         self.regularization = regularization
         self.train_iterations = iterations
+        self.random_seed = random_seed
         self.momentum = momentum
 
     def get_rating(self, user_index: int, item_index: int):
@@ -87,9 +88,9 @@ class Matrix_Factorization():
 
     def train(self):
         # Create initial user and item latent factors matrices using normal distribution
-        random_num_generator = np.random.default_rng()
+        random_num_generator = np.random.default_rng(self.random_seed)
         self.user_latent_factors = random_num_generator.normal(scale=1./self.latent_factors, size=(self.num_users, self.latent_factors))
-        self.item_latent_factors = np.random.normal(scale=1./self.latent_factors, size=(self.num_items, self.latent_factors))
+        self.item_latent_factors = random_num_generator.normal(scale=1./self.latent_factors, size=(self.num_items, self.latent_factors))
         
         # Initialize biases
         self.user_bias = np.zeros(self.num_users)
@@ -107,7 +108,7 @@ class Matrix_Factorization():
         # Perform stochastic gradient descent for number of iterations
         training_process = []
         for i in range(self.train_iterations):
-            np.random.shuffle(self.training_samples)
+            random_num_generator.shuffle(self.training_samples)
             self.run_sgd()
             mean_squared_error = self.get_mean_squared_error()
             training_process.append((i, mean_squared_error))
