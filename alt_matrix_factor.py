@@ -30,20 +30,6 @@ class Matrix_Factorization():
         self.train_iterations = iterations
         self.random_seed = random_seed
         self.momentum = momentum
-
-    def get_rating(self, user_index: int, item_index: int):
-        """
-        Returns predicted rating of item by user
-        """
-        prediction = self.ratings_mean + self.user_bias[user_index] + self.item_bias[item_index] + self.user_latent_factors[user_index, :].dot(self.item_latent_factors[item_index, :].T)
-        return prediction
-    
-    def get_prediction_matrix(self):
-        """
-        Returns whole prediction matrix
-        """
-        prediction_matrix = self.ratings_mean + self.user_bias[:,np.newaxis] + self.item_bias[np.newaxis:,] + self.user_latent_factors.dot(self.item_latent_factors.T)
-        return prediction_matrix
     
     def run_sgd(self):
         """
@@ -117,4 +103,27 @@ class Matrix_Factorization():
                 print("Iteration: %d ; error = %.4f" % (i+1, mean_squared_error))
         
         return training_process
+
+    def get_rating(self, user_index: int, item_index: int):
+        """
+        Returns predicted rating of item by user
+
+        Parameters
+        ----------
+        user_index : int
+        item_index: int
+
+        Returns
+        -------
+        prediction: list
+        List with predicted values
+        """
+        prediction = self.ratings_mean + self.user_bias[user_index] + self.item_bias[item_index] + self.user_latent_factors[user_index, :].dot(self.item_latent_factors[item_index, :].T)
+        return prediction
     
+    def get_prediction_matrix(self):
+        """
+        Returns whole prediction matrix
+        """
+        prediction_matrix = self.ratings_mean + self.user_bias[:,np.newaxis] + self.item_bias[np.newaxis:,] + self.user_latent_factors.dot(self.item_latent_factors.T)
+        return prediction_matrix
