@@ -1,8 +1,10 @@
 import numpy as np
+from pathlib import Path
+import json
 
 class RBM:
   
-  def __init__(self, ratings: np.ndarray, hidden_nodes_num: int, learning_rate: float = 0.1, iterations: int = 1000, random_seed: int = None):
+  def __init__(self, ratings: np.ndarray = np.asarray([]), hidden_nodes_num: int = 10, learning_rate: float = 0.1, iterations: int = 1000, random_seed: int = None):
     """
     Restricted Boltzmann Machine class used for recommendations generation
 
@@ -20,23 +22,11 @@ class RBM:
     """
 
     self.hidden_nodes_num = hidden_nodes_num
-    self.training_samples, self.visible_nodes_num = ratings.shape
     self.debug_print = False
-    self.ratings = ratings
     self.learning_rate = learning_rate
     self.iterations = iterations
     self.generator = np.random.default_rng(random_seed)
-
-    # Create weight matrix (visible_nodes_num x hidden_nodes_num)
-    # Uniform dist -> all states are equally likely to appear
-    self.weights = self.generator.uniform(
-			low=-0.1 * np.sqrt(6. / (hidden_nodes_num + self.visible_nodes_num)),
-      high=0.1 * np.sqrt(6. / (hidden_nodes_num + self.visible_nodes_num)),
-      size=(self.visible_nodes_num, self.hidden_nodes_num))
-
-    # Add bias into first row and first column
-    self.weights = np.insert(self.weights, 0, 0, axis = 0)
-    self.weights = np.insert(self.weights, 0, 0, axis = 1)
+    self.load_ratings(ratings)
 
   def set_debug(self, debug_print):
     """
@@ -52,6 +42,58 @@ class RBM:
   def get_learning_rate(self):
     return self.learning_rate
 
+  def load_ratings(self, ratings:np.ndarray):
+    """
+    Set ratings matrix used to train model
+
+    Parameters
+    ----------
+    ratings : ndarray
+
+    Returns
+    -------
+    Returns 0 if provided ratings are not compatible with actual model weights (if model was trained before)
+    """
+    if ratings.shape[0]!=0:
+      if hasattr(self, 'visible_nodes_num') & ratings.shape[1]!=self.visible_nodes_num:
+        return 0
+      self.ratings = ratings
+      self.training_samples, self.visible_nodes_num = ratings.shape
+      # Create weight matrix (visible_nodes_num x hidden_nodes_num)
+      # Uniform dist -> all states are equally likely to appear
+      self.weights = self.generator.uniform(
+        low=-0.1 * np.sqrt(6. / (self.hidden_nodes_num + self.visible_nodes_num)),
+        high=0.1 * np.sqrt(6. / (self.hidden_nodes_num + self.visible_nodes_num)),
+        size=(self.visible_nodes_num, self.hidden_nodes_num))
+
+      # Add bias into first row and first column
+      self.weights = np.insert(self.weights, 0, 0, axis = 0)
+      self.weights = np.insert(self.weights, 0, 0, axis = 1)
+    else:
+      self.training_samples = 0
+  
+  def load_from_file(self, filename:str):
+    path = Path("rbm_models/"+filename)
+    if path.is_file():
+        with path.open('r') as file:
+          data = json.load(file)
+          self.weights = np.array(data['weights'])
+          self.visible_nodes_num = data['visible_nodes_num']
+          self.hidden_nodes_num = data['hidden_nodes_num']
+          self.load_ratings(np.asarray([])) # load empty ratings to avoid errors with number of visible nodes
+    else:
+        print(f"No such file: '{path}'")
+  
+  def save_to_file(self, filename:str):
+    path = Path("rbm_models/"+filename)
+    data = {
+        'weights': self.weights.tolist(),
+        'visible_nodes_num': self.visible_nodes_num,
+        'hidden_nodes_num': self.hidden_nodes_num
+    }
+    with path.open('w') as file:
+        json.dump(data, file)
+
   def train(self, return_error: bool = False):
     """
     Run model training
@@ -63,9 +105,14 @@ class RBM:
 
     Returns
     -------
+    Returns 0 if no ratings for training were provided
     iter_error: list
       Error value for each iteration list
     """
+
+    if self.training_samples==0:
+      return 0
+    
     # Insert bias 1 into first column of training data
     data = np.insert(self.ratings, 0, 1, axis = 1)
     iter_error = []
