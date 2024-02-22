@@ -44,7 +44,7 @@ class RBM:
 
   def load_ratings(self, ratings:np.ndarray):
     """
-    Set ratings matrix used to train model
+    Load ratings matrix used to train model
 
     Parameters
     ----------
@@ -55,8 +55,9 @@ class RBM:
     Returns 0 if provided ratings are not compatible with actual model weights (if model was trained before)
     """
     if ratings.shape[0]!=0:
-      if hasattr(self, 'visible_nodes_num') & ratings.shape[1]!=self.visible_nodes_num:
-        return 0
+      if hasattr(self, 'visible_nodes_num'):
+        if ratings.shape[1]!=self.visible_nodes_num:
+          return 0
       self.ratings = ratings
       self.training_samples, self.visible_nodes_num = ratings.shape
       # Create weight matrix (visible_nodes_num x hidden_nodes_num)
@@ -86,6 +87,7 @@ class RBM:
   
   def save_to_file(self, filename:str):
     path = Path("rbm_models/"+filename)
+    path.parent.mkdir(parents=True, exist_ok=True)
     data = {
         'weights': self.weights.tolist(),
         'visible_nodes_num': self.visible_nodes_num,
