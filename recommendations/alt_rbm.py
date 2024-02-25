@@ -213,6 +213,15 @@ class RBM:
     # Take states without bias
     visible_states = visible_states[:,1:]
     return visible_states
+
+  def prepare_initial_recommendactions(self):
+    recommendations = []
+    # get some recommendations from each hidden node
+    for hidden_node in range(self.hidden_nodes_num):
+      nodes = np.zeros((1,self.hidden_nodes_num))
+      nodes[hidden_node] = 1
+      recommendations.append(self.run_hidden(nodes))
+    return recommendations
   
   def get_recommendations(self, data):
     """
