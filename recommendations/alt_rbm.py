@@ -1,6 +1,7 @@
 import numpy as np
 from pathlib import Path
 import json
+import os
 
 class RBM:
   
@@ -74,7 +75,8 @@ class RBM:
       self.training_samples = 0
   
   def load_from_file(self, filename:str):
-    path = Path("rbm_models/"+filename)
+    directory = os.path.dirname(os.path.abspath(__file__))
+    path = Path(os.path.join(directory, "rbm_models", filename))
     if path.is_file():
         with path.open('r') as file:
           data = json.load(file)
@@ -86,7 +88,8 @@ class RBM:
         print(f"No such file: '{path}'")
   
   def save_to_file(self, filename:str):
-    path = Path("rbm_models/"+filename)
+    directory = os.path.dirname(os.path.abspath(__file__))
+    path = Path(os.path.join(directory, "rbm_models", filename))
     path.parent.mkdir(parents=True, exist_ok=True)
     data = {
         'weights': self.weights.tolist(),
