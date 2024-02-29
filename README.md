@@ -14,3 +14,6 @@ dependencies
 (install) pip install -r requirements.txt  
 (save) pip freeze > requirements.txt  
 (win pandas-profiling version err) pip install pandas-profiling
+
+recommendations sample visualization
+python recommendations/app.py
