@@ -5,7 +5,16 @@
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-    <h1>Home</h1>
+    <div id="header">
+        <h2>Modele rekomendacji</h2>
+        <select id="model_selection">
+            {% for model in context.models %}
+                <option value="{{model}}">{{ model }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div id="content">
+    </div>
     <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>
