@@ -1,3 +1,37 @@
+:root{
+    --success: #22bb33;
+    --error: #bb2124;
+    --warning: #f0ad4e;
+    --info: #5bc0de;
+}
 body {
     background-color: lightblue;
+}
+.messageBox{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 32px;
+    right: 32px;
+    color: white;
+    padding: 32px;
+    font-size: 16px;
+    font-weight: bold;
+    z-index: 20;
+}
+.messageBox.success{
+    background: var(--success);
+}
+.messageBox.error{
+    background: var(--error);
+}
+.messageBox.warning{
+    background: var(--warning);
+}
+.messageBox.info{
+    background: var(--info);
+}
+.messageBox:empty{
+    display: none;
 }
