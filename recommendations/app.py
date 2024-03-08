@@ -42,7 +42,8 @@ def actions():
 @app.route('/initial', methods=['POST'])
 def initial():
     recommendations = rmb_model.prepare_initial_recommendactions()
-    return recommendations
+    context = {'recommendations': recommendations}
+    return render_template('initial.html', context=context)
 
 # test users to choose from
 @app.route('/prepared', methods=['POST'])
