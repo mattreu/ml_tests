@@ -8,6 +8,7 @@
     <div id="header">
         <h2>Modele rekomendacji</h2>
         <select id="model_selection">
+            <option value="" disabled selected></option>
             {% for model in context.models %}
                 <option value="{{model}}">{{ model }}</option>
             {% endfor %}
