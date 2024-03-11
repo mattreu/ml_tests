@@ -6,6 +6,8 @@
 }
 body {
     background-color: lightblue;
+    margin: 0;
+    padding: 0;
 }
 .messageBox{
     display: flex;
@@ -35,15 +37,31 @@ body {
 .messageBox:empty{
     display: none;
 }
+#content{
+    width: 90vw;
+    margin: 0 5vw;
+    padding: 8px;
+}
+.recommendations{
+    display: none;
+}
+.recommendations.active{
+    display: flex;
+    flex-flow: column;
+}
 .choices_header,
 .movie{
     display: grid;
     grid-template-columns: 2fr repeat(18, 1fr);
 }
+.movie{
+    position: relative;
+}
 .field{
     display: grid;
     place-items: center;
     padding: 8px 4px;
+    text-align: center;
 }
 .field.category::after{
     display: block;
@@ -54,4 +72,13 @@ body {
 }
 .field.category.active::after{
     background: var(--success);
+}
+.choices .selector{
+    appearance: none;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+.choices .selector:checked~.field{
+    background: orange;
 }
