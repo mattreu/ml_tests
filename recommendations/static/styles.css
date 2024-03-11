@@ -35,3 +35,23 @@ body {
 .messageBox:empty{
     display: none;
 }
+.choices_header,
+.movie{
+    display: grid;
+    grid-template-columns: 2fr repeat(18, 1fr);
+}
+.field{
+    display: grid;
+    place-items: center;
+    padding: 8px 4px;
+}
+.field.category::after{
+    display: block;
+    width: 20px;
+    height: 20px;
+    background: var(--error);
+    content: '';
+}
+.field.category.active::after{
+    background: var(--success);
+}

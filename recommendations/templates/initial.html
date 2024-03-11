@@ -1,0 +1,53 @@
+<div id="movies_choice">
+    {% for page in context.recommendations %}
+        <div class="recommendations">
+            <div class="choices">
+                <div class="choices_header">
+                    <div class="field">Tytuł</div>
+                    <div class="field">Akcja</div>
+                    <div class="field">Przygodowy</div>
+                    <div class="field">Animowany</div>
+                    <div class="field">Dla dzieci</div>
+                    <div class="field">Komedia</div>
+                    <div class="field">Kryminalny</div>
+                    <div class="field">Dokumentalny</div>
+                    <div class="field">Dramat</div>
+                    <div class="field">Fantasy</div>
+                    <div class="field">Film-noir</div>
+                    <div class="field">Horror</div>
+                    <div class="field">Muzyczny</div>
+                    <div class="field">Tajemniczy</div>
+                    <div class="field">Romans</div>
+                    <div class="field">Sci-fi</div>
+                    <div class="field">Thriller</div>
+                    <div class="field">Wojenny</div>
+                    <div class="field">Western</div>
+                </div>
+                {% for recommendation in page %}
+                    <div class="movie">
+                        <div class="field">{{recommendation.title}}</div>
+                        <div class="field category {% if recommendation.Action %}active{% endif %}"></div>
+                        <div class="field category {% if recommendation.Adventure %}active{% endif %}"></div>
+                        <div class="field category {% if recommendation.Animation %}active{% endif %}"></div>
+                        <div class="field category {% if recommendation.Children %}active{% endif %}"></div>
+                        <div class="field category {% if recommendation.Comedy %}active{% endif %}"></div>
+                        <div class="field category {% if recommendation.Crime %}active{% endif %}"></div>
+                        <div class="field category {% if recommendation.Documentary %}active{% endif %}"></div>
+                        <div class="field category {% if recommendation.Drama %}active{% endif %}"></div>
+                        <div class="field category {% if recommendation.Fantasy %}active{% endif %}"></div>
+                        <div class="field category {% if recommendation['Film-Noir'] %}active{% endif %}"></div>
+                        <div class="field category {% if recommendation.Horror %}active{% endif %}"></div>
+                        <div class="field category {% if recommendation.Musical %}active{% endif %}"></div>
+                        <div class="field category {% if recommendation.Mystery %}active{% endif %}"></div>
+                        <div class="field category {% if recommendation.Romance %}active{% endif %}"></div>
+                        <div class="field category {% if recommendation['Sci-Fi'] %}active{% endif %}"></div>
+                        <div class="field category {% if recommendation.Thriller %}active{% endif %}"></div>
+                        <div class="field category {% if recommendation.War %}active{% endif %}"></div>
+                        <div class="field category {% if recommendation.Western %}active{% endif %}"></div>
+                    </div>
+                {% endfor %}
+            </div>
+            <div class="page">{{ loop.index }}/{{loop.length}}</div>
+        </div>
+    {% endfor %}
+</div>

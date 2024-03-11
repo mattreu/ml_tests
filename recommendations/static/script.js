@@ -88,7 +88,8 @@ const newUser = () => {
             throw new Error('Error: ' + response.statusText)
         }
     }).then(data => {
-
+        createMessageBox('Poprawnie otwarto proces zbierania danych', type='success')
+        document.getElementById('content').innerHTML = data
     })
 }
 
