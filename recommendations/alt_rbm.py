@@ -27,6 +27,7 @@ class RBM:
     self.learning_rate = learning_rate
     self.iterations = iterations
     self.generator = np.random.default_rng(random_seed)
+    self.ratings = self.visible_nodes_num = self.training_samples = None
     self.load_ratings(ratings)
 
   def set_debug(self, debug_print):
@@ -56,9 +57,8 @@ class RBM:
     Returns 0 if provided ratings are not compatible with actual model weights (if model was trained before)
     """
     if ratings.shape[0]!=0:
-      if hasattr(self, 'visible_nodes_num'):
-        if ratings.shape[1]!=self.visible_nodes_num:
-          return 0
+      if ((self.visible_nodes_num!=None) & (ratings.shape[1]!=self.visible_nodes_num)):
+        return 0
       self.ratings = ratings
       self.training_samples, self.visible_nodes_num = ratings.shape
       # Create weight matrix (visible_nodes_num x hidden_nodes_num)
@@ -217,13 +217,28 @@ class RBM:
     visible_states = visible_states[:,1:]
     return visible_states
 
-  def prepare_initial_recommendactions(self):
-    recommendations = []
-    # get some recommendations from each hidden node
+  def prepare_initial_recommendations(self):
+    recommendations_raw = []
+    
+    # Get some recommendations from each hidden node
     for hidden_node in range(self.hidden_nodes_num):
       nodes = np.zeros((1,self.hidden_nodes_num))
-      nodes[hidden_node] = 1
-      recommendations.append(self.run_hidden(nodes))
+      nodes[0,hidden_node] = 1
+      recommendations_raw.append(np.nonzero(self.run_hidden(nodes)[0])[0]+1)
+    
+    # Choose part of recommendations to display
+    movies_per_node = 10
+    recommendations = []
+    for index in range(self.hidden_nodes_num):
+      if len(recommendations_raw[index]) > 10:
+        recommendations.append(np.random.choice(recommendations_raw[index], movies_per_node, replace=False))
+      else:
+        recommendations.append(recommendations_raw[index])
+      # Delete movies that appear in previous sets of recommendations
+      if index != self.hidden_nodes_num-1:
+        for raw_index in range(index + 1, self.hidden_nodes_num):
+          recommendations_raw[raw_index] = np.setdiff1d(recommendations_raw[raw_index], recommendations[index], True)
+
     return recommendations
   
   def get_recommendations(self, data):
@@ -254,3 +269,4 @@ class RBM:
 #   print(model.weights)
 #   user = np.array([[0,0,0,1,1,0]])
 #   print(model.get_recommendations(user))
+#   print(model.prepare_initial_recommendations())
