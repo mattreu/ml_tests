@@ -1,6 +1,6 @@
 <div id="movies_choice">
     {% for page in context.recommendations %}
-        <div class="recommendations">
+        <div class="recommendations {% if loop.first %}active{% endif %}">
             <div class="choices">
                 <div class="choices_header">
                     <div class="field">Tytuł</div>
@@ -25,6 +25,7 @@
                 </div>
                 {% for recommendation in page %}
                     <div class="movie">
+                        <input type="checkbox" class="selector" name="chosen_movies" value="{{recommendation.movie_id}}">
                         <div class="field">{{recommendation.title}}</div>
                         <div class="field category {% if recommendation.Action %}active{% endif %}"></div>
                         <div class="field category {% if recommendation.Adventure %}active{% endif %}"></div>
