@@ -1,4 +1,4 @@
-<div id="movies_choice">
+<form id="movies_choice" method="post" action="/new_user_recommendations">
     {% for page in context.recommendations %}
         <div class="recommendations {% if loop.first %}active{% endif %}">
             <div class="choices">
@@ -48,7 +48,12 @@
                     </div>
                 {% endfor %}
             </div>
-            <div class="page">{{ loop.index }}/{{loop.length}}</div>
+            <div class="navigation">
+                <div class="prev" onclick="prevPage()"></div>
+                <div class="page">{{ loop.index }}/{{loop.length}}</div>
+                <div class="next" onclick="nextPage()"></div>
+            </div>
+            <input type="submit" value="Generuj rekomendacje" class="generate">
         </div>
     {% endfor %}
-</div>
+    </form>

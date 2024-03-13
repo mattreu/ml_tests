@@ -90,7 +90,52 @@ const newUser = () => {
     }).then(data => {
         createMessageBox('Poprawnie otwarto proces zbierania danych', type='success')
         document.getElementById('content').innerHTML = data
+        // Submit 
+        document.getElementById('movies_choice').addEventListener('submit', e => {
+            e.preventDefault()
+            const formData = new FormData()
+            const checkboxes = document.querySelectorAll('input[name="chosen_movies"]:checked')
+            checkboxes.forEach(checkbox => {
+                formData.append('chosen_movies', checkbox.value)
+            })
+            fetch('/new_user_recommendations', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.text())
+            .then(data => document.getElementById('content').innerHTML = data)
+            .catch(error => console.error('Error:', error))
+        });
     })
+}
+
+function nextPage() {
+    const recommendations = document.querySelectorAll('.recommendations');
+    for (let i = 0; i < recommendations.length; i++) {
+        if (recommendations[i].classList.contains('active')) {
+            recommendations[i].classList.remove('active')
+            if (i === recommendations.length - 1) {
+                recommendations[0].classList.add('active')
+            } else {
+                recommendations[i + 1].classList.add('active')
+            }
+            break
+        }
+    }
+}
+function prevPage() {
+    const recommendations = document.querySelectorAll('.recommendations');
+    for (let i = 0; i < recommendations.length; i++) {
+        if (recommendations[i].classList.contains('active')) {
+            recommendations[i].classList.remove('active')
+            if (i === 0) {
+                recommendations[recommendations.length - 1].classList.add('active')
+            } else {
+                recommendations[i - 1].classList.add('active')
+            }
+            break
+        }
+    }
 }
 
 const existingUser = () => {

@@ -82,3 +82,63 @@ body {
 .choices .selector:checked~.field{
     background: orange;
 }
+.navigation{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 16px 0;
+}
+.prev, .next{
+    background: var(--info);
+    width: 40px;
+    height: 24px;
+    padding: 8px;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+}
+.prev{
+    border-radius: 50px 0 0 50px;
+}
+.next{
+    border-radius: 0 50px 50px 0;
+}
+.prev::after, .next::after{
+    display: block;
+    font-size: 20px;
+    font-weight: bold;
+    margin: 0 0 10px 0;
+}
+.prev::after{
+    content: '\2039';
+}
+.next::after{
+    content: '\203A';
+}
+.page{
+    margin: -8px -10px;
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 50px;
+    position: relative;
+    z-index: 1;
+    background-color: #ebebeb;
+}
+.generate{
+    padding: 8px 12px;
+    margin: 16px auto;
+    background: var(--success);
+    border-radius: 50px;
+    font-size: 20px;
+    font-weight: bold;
+    display: grid;
+    place-items: center;
+    color: #fcfcfc;
+    box-shadow: 6px 6px 16px 0px rgba(66, 68, 90, 1);
+    border: none;
+    cursor: pointer;
+}
