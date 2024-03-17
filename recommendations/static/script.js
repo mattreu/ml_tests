@@ -93,14 +93,14 @@ const newUser = () => {
         // Submit 
         document.getElementById('movies_choice').addEventListener('submit', e => {
             e.preventDefault()
-            const formData = new FormData()
             const checkboxes = document.querySelectorAll('input[name="chosen_movies"]:checked')
-            checkboxes.forEach(checkbox => {
-                formData.append('chosen_movies', checkbox.value)
-            })
+            const chosenMovies = Array.from(checkboxes).map(checkbox => checkbox.value)
             fetch('/new_user_recommendations', {
                 method: 'POST',
-                body: formData
+                body: JSON.stringify({chosen_movies: chosenMovies}),
+                headers: {
+                    'Content-Type': 'application/json',
+                },
             })
             .then(response => response.text())
             .then(data => document.getElementById('content').innerHTML = data)

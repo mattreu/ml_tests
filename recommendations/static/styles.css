@@ -44,6 +44,7 @@ body {
 }
 .recommendations{
     display: none;
+    position: relative;
 }
 .recommendations.active{
     display: flex;
@@ -141,4 +142,21 @@ body {
     box-shadow: 6px 6px 16px 0px rgba(66, 68, 90, 1);
     border: none;
     cursor: pointer;
+}
+.movies_switch{
+    position: absolute;
+    top: 0;
+    right: 100%;
+    width: 50px;
+    height: 50px;
+    border-radius: 50px;
+    display: grid;
+    place-items: center;
+}
+.movies_switch::after{
+    content: '+';
+    display: block;
+}
+.movies_switch.active::after{
+    content: '-';
 }
