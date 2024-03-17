@@ -224,7 +224,7 @@ class RBM:
     for hidden_node in range(self.hidden_nodes_num):
       nodes = np.zeros((1,self.hidden_nodes_num))
       nodes[0,hidden_node] = 1
-      recommendations_raw.append(np.nonzero(self.run_hidden(nodes)[0])[0]+1)
+      recommendations_raw.append(np.nonzero(self.run_hidden(nodes)[0])[0])
     
     # Choose part of recommendations to display
     movies_per_node = 10
@@ -240,6 +240,12 @@ class RBM:
           recommendations_raw[raw_index] = np.setdiff1d(recommendations_raw[raw_index], recommendations[index], True)
 
     return recommendations
+  
+  def get_initial_recommendations(self, data):
+    user_choices = np.zeros((1,self.visible_nodes_num))
+    for movie_id in data:
+      user_choices[0, int(movie_id)] = 1
+    return np.nonzero(self.get_recommendations(np.array(user_choices))[0])[0]
   
   def get_recommendations(self, data):
     """
@@ -268,5 +274,7 @@ class RBM:
 #   model.train()
 #   print(model.weights)
 #   user = np.array([[0,0,0,1,1,0]])
+#   test = [1,2,3]
+#   print(model.get_initial_recommendations(test))
 #   print(model.get_recommendations(user))
 #   print(model.prepare_initial_recommendations())
