@@ -95,6 +95,8 @@ const newUser = () => {
             e.preventDefault()
             const checkboxes = document.querySelectorAll('input[name="chosen_movies"]:checked')
             const chosenMovies = Array.from(checkboxes).map(checkbox => checkbox.value)
+            const chosenMoviesString = JSON.stringify(chosenMovies)
+            document.cookie = 'chosenMovies=' + chosenMoviesString + ';path=/'
             fetch('/new_user_recommendations', {
                 method: 'POST',
                 body: JSON.stringify({chosen_movies: chosenMovies}),
@@ -109,7 +111,7 @@ const newUser = () => {
     })
 }
 
-function nextPage() {
+const nextPage = () => {
     const recommendations = document.querySelectorAll('.recommendations');
     for (let i = 0; i < recommendations.length; i++) {
         if (recommendations[i].classList.contains('active')) {
@@ -123,7 +125,7 @@ function nextPage() {
         }
     }
 }
-function prevPage() {
+const prevPage = () => {
     const recommendations = document.querySelectorAll('.recommendations');
     for (let i = 0; i < recommendations.length; i++) {
         if (recommendations[i].classList.contains('active')) {
@@ -135,6 +137,32 @@ function prevPage() {
             }
             break
         }
+    }
+}
+
+const switchDisplay = element => {
+    element.classList.toggle('active')
+}
+
+const getCookie = name => {
+    const re = new RegExp(name + "=([^;]+)")
+    const value = re.exec(document.cookie)
+    return (value != null) ? JSON.parse(value[1]) : null
+}
+
+const refreshRecommendations = () => {
+    const chosenMovies = getCookie('chosenMovies')
+    if(chosenMovies){
+        fetch('/new_user_recommendations', {
+            method: 'POST',
+            body: JSON.stringify({chosen_movies: chosenMovies}),
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => response.text())
+        .then(data => document.getElementById('content').innerHTML = data)
+        .catch(error => console.error('Error:', error))
     }
 }
 

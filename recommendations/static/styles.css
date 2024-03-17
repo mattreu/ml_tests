@@ -45,6 +45,7 @@ body {
 .recommendations{
     display: none;
     position: relative;
+    margin: 48px 0;
 }
 .recommendations.active{
     display: flex;
@@ -143,15 +144,18 @@ body {
     border: none;
     cursor: pointer;
 }
-.movies_switch{
+.movies_switch, .reload{
     position: absolute;
     top: 0;
     right: 100%;
     width: 50px;
     height: 50px;
     border-radius: 50px;
+    font-size: 30px;
+    font-weight: bold;
     display: grid;
     place-items: center;
+    background: var(--info);
 }
 .movies_switch::after{
     content: '+';
@@ -159,4 +163,20 @@ body {
 }
 .movies_switch.active::after{
     content: '-';
+    margin: 0 0 6px 0;
+}
+.movies_switch~.movie{
+    display: none;
+}
+.movies_switch.active~.movie{
+    display: grid;
+}
+.reload{
+    top: 58px;
+    background: var(--warning);
+}
+.reload::after{
+    content: '\27F3';
+    display: block;
+    margin: 0 0 6px 0;
 }

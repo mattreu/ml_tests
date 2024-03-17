@@ -28,7 +28,8 @@
                     <div class="field">Wojenny</div>
                     <div class="field">Western</div>
                 </div>
-                <div class="movies_switch"></div>
+                <div class="reload" onclick="refreshRecommendations()"></div>
+                <div class="movies_switch active" onclick="switchDisplay(this)"></div>
                 {% for recommendation in context.recommendations %}
                     <div class="movie">
                         <div class="field">{{recommendation.title}}</div>
@@ -86,7 +87,7 @@
                 <div class="field">Wojenny</div>
                 <div class="field">Western</div>
             </div>
-            <div class="movies_switch"></div>
+            <div class="movies_switch" onclick="switchDisplay(this)"></div>
             {% for recommendation in context.chosen_movies %}
                 <div class="movie">
                     <div class="field">{{recommendation.title}}</div>
