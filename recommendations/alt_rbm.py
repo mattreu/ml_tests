@@ -41,8 +41,12 @@ class RBM:
     """
     self.debug_print = debug_print
 
-  def get_learning_rate(self):
-    return self.learning_rate
+  def get_parameters(self):
+    return {
+      'hidden_nodes_num': self.hidden_nodes_num,
+      'learning_rate': self.learning_rate,
+      'iterations': self.iterations
+    }
 
   def load_ratings(self, ratings:np.ndarray):
     """
@@ -247,7 +251,7 @@ class RBM:
       user_choices[0, int(movie_id)] = 1
     return np.nonzero(self.get_recommendations(np.array(user_choices))[0])[0]
   
-  def get_recommendations(self, data):
+  def get_recommendations(self, data, get_error = False):
     """
     Run visible and hidden nodes to generate recommendations
 
@@ -262,6 +266,9 @@ class RBM:
       Recommendations matrix
     """
     recommendations = self.run_hidden(self.run_visible(data))
+    if get_error:
+      error = np.sum((data - recommendations) ** 2)
+      return recommendations, error
     return recommendations
 
   def _logistic(self, x):
