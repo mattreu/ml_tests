@@ -1,5 +1,7 @@
 import zipfile
 import pandas as pd
+from sklearn.model_selection import KFold
+import numpy as np
 
 class data_provider:
     def __init__(self) -> None:
@@ -29,6 +31,34 @@ class data_provider:
         test = df.sample(frac=holdout_fraction, replace=False, random_state=random_seed)
         train = df[~df.index.isin(test.index)]
         return train, test
+    
+    def cross_validation_split(self, df: pd.DataFrame, holdout_fraction:float=0.1, random_seed:int=None):
+        """
+        Splits a DataFrame into multiple training and test sets for use in cross validation.
+
+        Parameters
+        ----------
+        df: DataFrame
+            Data to split
+        holdout_fraction: float
+            Fraction of dataframe rows to use in each test set
+        random_seed: int
+            Random seed for reproducibility
+
+        Returns
+        -------
+        cv_data: list of tuples
+            List of (train, test) tuples, where 'train' and 'test' are DataFrames
+        """
+        num_splits = int(1 / holdout_fraction)
+        kf = KFold(n_splits=num_splits, shuffle=True, random_state=random_seed)
+
+        cv_data = []
+        for train_index, test_index in kf.split(df):
+            train = df.iloc[train_index].to_numpy()
+            test = df.iloc[test_index].to_numpy()
+            cv_data.append((train, test))
+        return cv_data
 
     def get_ratings(self):
         ratings_cols = ['user_id', 'movie_id', 'rating', 'unix_timestamp']
