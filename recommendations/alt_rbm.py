@@ -251,7 +251,7 @@ class RBM:
       user_choices[0, int(movie_id)] = 1
     return np.nonzero(self.get_recommendations(np.array(user_choices))[0])[0]
   
-  def get_recommendations(self, data, get_error = False):
+  def get_recommendations(self, data):
     """
     Run visible and hidden nodes to generate recommendations
 
@@ -266,10 +266,25 @@ class RBM:
       Recommendations matrix
     """
     recommendations = self.run_hidden(self.run_visible(data))
-    if get_error:
-      error = np.sum((data - recommendations) ** 2)
-      return recommendations, error
     return recommendations
+
+  def get_recommendations_error(self, data):
+    data = np.insert(data, 0, 1, axis = 1)
+    num_examples = data.shape[0]
+
+    hidden_states = np.ones((num_examples, self.hidden_nodes_num + 1))
+    hidden_activations = np.dot(data, self.weights)
+    hidden_probs = self._logistic(hidden_activations)
+    hidden_probs[:,0] = 1
+    hidden_states[:,:] = hidden_probs > self.generator.random(size=(num_examples, self.hidden_nodes_num + 1))
+
+    visible_states = np.ones((num_examples, self.visible_nodes_num + 1))
+    visible_activations = np.dot(hidden_states, self.weights.T)
+    visible_probs = self._logistic(visible_activations)
+    visible_probs[:,0] = 1
+    visible_states[:,:] = visible_probs > self.generator.random(size=(num_examples, self.visible_nodes_num + 1))
+    error = np.sum((data - visible_probs) ** 2)
+    return visible_states, error
 
   def _logistic(self, x):
     return 1.0 / (1 + np.exp(-x))
