@@ -5,7 +5,12 @@ import numpy as np
 
 class data_provider:
     def __init__(self) -> None:
-        zip_ref = zipfile.ZipFile("ml-100k.zip", "r")
+        try:
+            zip_ref = zipfile.ZipFile("ml-100k.zip", "r")
+        except FileNotFoundError:
+            import urllib.request
+            urllib.request.urlretrieve("http://files.grouplens.org/datasets/movielens/ml-100k.zip", "ml-100k.zip")
+            zip_ref = zipfile.ZipFile("ml-100k.zip", "r")
         zip_ref.extractall()
         print(zip_ref.read('ml-100k/u.info'))
 
