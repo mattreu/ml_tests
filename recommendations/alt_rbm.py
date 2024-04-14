@@ -285,6 +285,19 @@ class RBM:
     visible_states[:,:] = visible_probs > self.generator.random(size=(num_examples, self.visible_nodes_num + 1))
     error = np.sum((data - visible_probs) ** 2)
     return visible_states, error
+  
+  def free_energy(self, data):
+    energies = np.array([self.free_energy_vector(vector) for vector in data])
+    return energies.mean()
+
+  def free_energy_vector(self, vector):
+    visible_bias = self.weights[1:,0]
+    hidden_bias = self.weights[0,1:]
+    weights = self.weights[1:,1:]
+
+    first_term = np.dot(visible_bias, vector)
+    second_term = np.sum(np.log(1 + np.exp(hidden_bias + np.dot(weights.T, vector))))
+    return -first_term - second_term
 
   def _logistic(self, x):
     return 1.0 / (1 + np.exp(-x))
@@ -295,6 +308,7 @@ class RBM:
 #   model = RBM(training_data, 5)
 #   model.train()
 #   print(model.weights)
+#   print(model.free_energy(training_data))
 #   user = np.array([[0,0,0,1,1,0]])
 #   test = [1,2,3]
 #   print(model.get_initial_recommendations(test))
