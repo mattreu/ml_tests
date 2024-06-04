@@ -166,3 +166,4 @@ ml-100k
 scikit/datasets
 training_results
 rbm_models
+scikit/images
