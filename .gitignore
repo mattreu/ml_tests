@@ -167,3 +167,5 @@ scikit/datasets
 training_results
 rbm_models
 scikit/images
+keras/test_models
+keras/test_checkpoints
