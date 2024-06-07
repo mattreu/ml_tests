@@ -15,5 +15,5 @@ dependencies
 (save) pip freeze > requirements.txt  
 (win pandas-profiling version err) pip install pandas-profiling
 
-recommendations sample visualization
-python recommendations/app.py
+tensorboard activation assuming logs folder is named my_logs in current directory
+tensorboard --logdir=./my_logs
