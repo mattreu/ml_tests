@@ -169,3 +169,4 @@ rbm_models
 scikit/images
 keras/test_models
 keras/test_checkpoints
+keras/my_logs
