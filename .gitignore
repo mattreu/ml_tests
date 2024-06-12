@@ -170,3 +170,4 @@ scikit/images
 keras/test_models
 keras/test_checkpoints
 keras/my_logs
+keras/tuner
