@@ -1,5 +1,7 @@
 # ml_tests
 
+Repository with some ml algorithms i found and studied (online and in books)
+
 venv creation
 python -m venv ./venv
 
