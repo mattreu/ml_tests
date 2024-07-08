@@ -164,6 +164,7 @@ ml-100k
 .virtual_documents/data_analytics.ipynb
 
 scikit/datasets
+tf/datasets
 training_results
 rbm_models
 scikit/images
